@@ -47,12 +47,112 @@ void save_receipt(const string& one) {
     }
 }
 
+
 //Создаём перечень меню
 void menu_dynamic() {
     int k;
+    float main_food = 0;
+    int sale;
     string food;
+    vector<pair<string, float>> main_menu = {
+        {"Стейк", 2200},
+        {"Луковый суп", 900},
+        {"Капучино 200мл", 160},
+        {"Омлет", 400},
+        {"Тар-Тар", 900},
+        {"Торт Наполеон клубничный", 950},
+        {"Шампанское De Cruello", 6000}
+    };
 
+    vector<pair<string, float>> ordered;
+
+    cout << "----- Меню -----" << endl;
+    for (int i = 0; i < main_menu.size(); i++) {
+        cout << (i + 1) << ". " << main_menu[i].first << " - " << main_menu[i].second << " руб." << endl;
+    }
+
+    while (true) {
+        cout << "Введите номер блюда для заказа (0 для завершения): ";
+        cin >> k;
+
+        if (k == 0) {
+            cout << "Заказ завершён \n";
+            break;
+        }
+
+        if (k >= 1 && k <= main_menu.size()) {
+            main_food += main_menu[k - 1].second;
+            ordered.push_back(main_menu[k - 1]);
+            cout << "Добавлено: " << main_menu[k - 1].first << " за " << main_menu[k - 1].second << " руб." << endl;
+        } else {
+            cout << "Некорректный номер блюда, попробуйте снова.\n";
+        }
+    }
+
+    float main_food1 = main_food;
+    main_food += main_food / 5;
+
+    int dis;
+    {
+        int discount = 10;
+        cout << "Ваша скидка - " << discount << "%\n";
+        cout << "У вас есть скидка? ";
+        string ask;
+        cin >> ask;
+
+        if (ask == "Да" || ask == "Yes" || ask == "yes" || ask == "да") {
+            int discount_ask;
+            cout << "Введите свою скидку в рублях: ";
+            cin >> discount_ask;
+            if (main_food - (main_food / 100) * discount < main_food - discount_ask) {
+                main_food = main_food - (main_food / 100) * discount;
+                dis = discount;
+            } else {
+                main_food = main_food - discount_ask;
+                if (main_food < 0) {
+                    main_food = 0;
+                    dis = discount_ask;
+                }
+                dis = discount_ask;
+            }
+        } else {
+            dis = discount;
+            main_food = main_food - (main_food / 100) * discount;
+        }
+    }
+
+    if (main_food >= 4000 && main_food <= 10000) {
+        main_food -= main_food * 0.10;
+    } else if (main_food > 10000 && main_food <= 20000) {
+        main_food -= main_food * 0.13;
+    } else if (main_food > 20000) {
+        main_food -= main_food * 0.18;
+    }
+
+    cout << "Сумма заказа с учётом скидки: " << main_food << " руб.\n";
+
+    cout << "Сохранить чек? - ";
+    string ask_receipt;
+    cin >> ask_receipt;
+
+    if (ask_receipt == "Yes" || ask_receipt == "yes" || ask_receipt == "Да" || ask_receipt == "да") {
+        string one;
+        one += "\n-------------Чек:--------------- \n";
+        one += "|--Блюдо--|--Цена--|\n";
+
+        for (const auto& dish : ordered) {
+            one += dish.first + " -- " + to_string(dish.second) + "\n";
+        }
+
+        one += "Скидка - " + to_string(dis) + "\n";
+        one += "НДС (20%) - " + to_string(main_food1) + " --> " + to_string(main_food) + "\n";
+        one += "Итоговая сумма - " + to_string(main_food) + "\n";
+        one += "--------------------------------\n";
+
+        save_receipt(one);
+    }
 }
+
 
 // Основная функция ввода и вывода блюд
 void sum_cafe() {
@@ -177,11 +277,7 @@ void sum_cafe() {
     }
 }
 
-// Точка входа
-int main() {
-    SetConsoleOutputCP(CP_UTF8);  // Вывод в UTF-8
-    SetConsoleCP(CP_UTF8);        // Ввод в UTF-8
-
+int login() {
     //Авторизация и разделение прав доступа
     int password = 0;
     cout << "Авторизуйтесь, если вы работник - ";
@@ -212,6 +308,21 @@ int main() {
                 return 0;
             }
         }
+    }
+    else {
+        sum_cafe();
+    }
+}
+
+// Точка входа
+int main() {
+    SetConsoleOutputCP(CP_UTF8);  // Вывод в UTF-8
+    SetConsoleCP(CP_UTF8);        // Ввод в UTF-8
+
+    int k;
+    cin >> k;
+    if (k == 0) {
+        menu_dynamic();
     }
     else {
         sum_cafe();
