@@ -47,6 +47,13 @@ void save_receipt(const string& one) {
     }
 }
 
+//Создаём перечень меню
+void menu_dynamic() {
+    int k;
+    string food;
+
+}
+
 // Основная функция ввода и вывода блюд
 void sum_cafe() {
     int k;
@@ -175,7 +182,40 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);  // Вывод в UTF-8
     SetConsoleCP(CP_UTF8);        // Ввод в UTF-8
 
-    sum_cafe();
+    //Авторизация и разделение прав доступа
+    int password = 0;
+    cout << "Авторизуйтесь, если вы работник - ";
+    cin >> password;
+    vector<int> passwords = {1111, 1342, 2222, 1393, 9979, 6261, 8433};
+    if (password != 0) {
+        for (int p : passwords) {
+            if (password == p) {
+
+                int ask_stop;
+                cout << u8"Если хотите выйти, введите ноль -";
+                cin >> ask_stop;
+
+                if (ask_stop == 0) {
+                    return 0;
+                }
+
+                cout << "Хотите что-то заказать?";
+                string new_ask;
+                cin >> new_ask;
+                if (new_ask == u8"Да" or new_ask == u8"Yes" or new_ask == u8"yes" or new_ask == u8"да") {
+                    sum_cafe();
+                }
+                else if (new_ask == u8"Нет" or new_ask == u8"No" or new_ask == u8"no" or new_ask == u8"нет"){
+                    cout << "Преступайте к редактированию \n";
+                    menu_dynamic();
+                }
+                return 0;
+            }
+        }
+    }
+    else {
+        sum_cafe();
+    }
 
     return 0;
 }
